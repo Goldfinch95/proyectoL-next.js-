@@ -1,0 +1,10 @@
+.card{
+    height: 100px;
+    width: 250px;
+    background-color: #f2efea;
+}
+
+.card-color-costum{
+    background-color: #36ce3640;
+    border: none;
+}

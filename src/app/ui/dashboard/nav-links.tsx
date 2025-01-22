@@ -20,7 +20,7 @@ export default function NavLinks() {
     <>
       {links.map((link) => {
         return (
-            <Link
+          <Link
             key={link.name}
             href={link.href}
             className={clsx(
@@ -30,12 +30,9 @@ export default function NavLinks() {
                 "text-black": pathname !== link.href,
               }
             )}
-            
           >
-              {/* Ícono */}
-              <FontAwesomeIcon className="fs-5" icon={link.icon} />
-              {/* Texto */}
-              <span className="mb-0">{link.name}</span>
+            <FontAwesomeIcon className="fs-5" icon={link.icon} />
+            <span className="mb-0">{link.name}</span>
           </Link>
         );
       })}

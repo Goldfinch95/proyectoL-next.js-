@@ -1,3 +1,14 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body{
+  height: 100vh;
+}
+
+
 .nav-link:focus {
   background-color: #f2efea !important;
 }

@@ -1,0 +1,25 @@
+.input-group-text,
+.form-control {
+  background-color: transparent !important;
+  border: 1px solid #6c757d; /* Borde gris (puedes cambiar el color) */
+  color: #6c757d; /* Texto gris */
+  border-left: none;
+  
+}
+
+.btn-custom{
+    border-right: none;
+}
+
+
+.btn-custom:hover{
+    background-color: transparent !important;
+    color: #6c757d;
+}
+
+.form-control:focus,
+.btn-custom:focus {
+  outline: none; /* Elimina el contorno azul */
+  box-shadow: none; /* Elimina el efecto de sombra */
+  border-color: #6c757d; /* Mantén el color del borde consistente */
+}

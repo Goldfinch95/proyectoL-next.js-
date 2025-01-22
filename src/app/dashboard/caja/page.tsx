@@ -1,13 +1,16 @@
 import Image from "next/image";
+import Nav from "@/app/ui/dashboard/nav";
 
 export default function Page() {
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      <Nav />
       <Image
-        src="/website_under_construction.webp" // Ruta del archivo en la carpeta public
+        src="/website_under_construction.webp"
         alt="Página en construcción"
-        layout="fill" // Hace que la imagen ocupe todo el contenedor
-        objectFit="contain" // Ajusta la imagen sin recortar, manteniendo su proporción
+        layout="fill"
+        objectFit="contain"
+        style={{ zIndex: -1 }} // Asegura que la imagen quede detrás del contenido
       />
     </div>
   );

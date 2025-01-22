@@ -1,0 +1,11 @@
+.nav-link:focus {
+    background-color: #f2efea !important;
+  }
+  
+  span{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    font-weight: 500;
+  }
+  

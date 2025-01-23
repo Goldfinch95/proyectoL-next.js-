@@ -10,6 +10,7 @@ import TableNav from "../ui/dashboard/tablenav";
 import Calendar from "../ui/dashboard/modals/calendar";
 import Ingresar from "../ui/dashboard/modals/ingresar";
 import Crear from "../ui/dashboard/modals/crear";
+import TableComponent from "../ui/dashboard/table";
 
 export default function Layout() {
   const router = useRouter();
@@ -35,6 +36,11 @@ export default function Layout() {
             <Nav />
             <Boxes />
             <TableNav />
+            <div>
+            </div>
+          </div>
+          <div>
+            <TableComponent />
           </div>
         </div>
       </div>

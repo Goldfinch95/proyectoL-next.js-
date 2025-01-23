@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "../table.module.css";
+import { Poppins } from "next/font/google";
+
+export const poppins = Poppins({ weight: "600", subsets: ["latin"] });
+
 export default function TableComponent() {
   // Estado para los datos de la tabla
   const [data, setData] = useState<
@@ -48,39 +52,73 @@ export default function TableComponent() {
 
   return (
     <div>
-      <table className={`${styles.customTable} table mt-2`}>
+      <table
+        className="table mt-2"
+        style={{ fontFamily: poppins.style.fontFamily }}
+      >
         <thead>
-          <tr className={styles.customTr}>
-            <th scope="col" className={styles.customTh}>
-              {" "}
-              {/* Clase añadida */}
+          {/* Primer tr con fondo negro */}
+          <tr>
+            <th
+              scope="col"
+              className="d-flex"
+              style={{ backgroundColor: "#f2efea", fontSize: "14px" }}
+            >
               <div className="d-flex align-items-center">
                 <span className="ps-2 me-2 pe-2">Fecha y hora</span>
               </div>
             </th>
-            <th scope="col" className={styles.customTh}>
-              {" "}
-              {/* Clase añadida */}
-              <div className="d-flex align-items-center">
-                <span className="me-2 pe-2">Cuenta</span>
+            <th
+              scope="col"
+              style={{ backgroundColor: "#f2efea", fontSize: "14px" }}
+            >
+              <div className="d-flex">
+                <span className="me-2 pe-2 w-auto">Cuenta</span>
               </div>
             </th>
-            <th scope="col" className={styles.customTh}>
-              {" "}
-              {/* Clase añadida */}
+            <th
+              scope="col"
+              style={{ backgroundColor: "#f2efea", fontSize: "14px" }}
+            >
               <div className="d-flex align-items-center justify-content-end">
-                <span className="me-2 pe-2">Movimiento</span>
+                <span className="me-2 pe-2 d-flex justify-content-end">
+                  Movimiento
+                </span>
               </div>
             </th>
           </tr>
         </thead>
         <tbody>
+          {/* Las filas del cuerpo de la tabla tendrán fondo transparente */}
           {data.map((item, index) => (
-            <tr key={index} className={styles.customBtn}>
-              <td className={styles.customTd}>{item.fecha}</td>
-              <td className={styles.customTd}>{item.item}</td>
-              <td className={`${styles.customTd} d-flex justify-content-end`}>
-                ${formatGasto(item.gasto)}
+            <tr key={index} style={{ backgroundColor: "#fbf9f5" }}>
+              <td
+                className="px-3 py-4 d-flex"
+                style={{ backgroundColor: "#fbf9f5", fontSize: "14px" }}
+              >
+                <span className="d-flex justify-content-start text-black-50">
+                  {item.fecha}
+                </span>
+              </td>
+              <td
+                className="px-3 py-4 text-center"
+                style={{ backgroundColor: "#fbf9f5", fontSize: "14px" }}
+              >
+                <span className="d-flex justify-content-start text-black-50">
+                  {item.item}
+                </span>
+              </td>
+              <td
+                className="d-flex justify-content-end px-3 py-4"
+                style={{ backgroundColor: "#fbf9f5", fontSize: "14px" }}
+              >
+                <span
+                  className={`d-flex justify-content-end ${
+                    item.gasto > 0 ? "text-success" : "text-danger"
+                  }`}
+                >
+                  ${formatGasto(item.gasto)}
+                </span>
               </td>
             </tr>
           ))}

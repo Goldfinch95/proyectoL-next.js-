@@ -1,0 +1,33 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .col {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .text-muted {
+    color: #ccc !important;
+  }
+  .border {
+    border: 1px solid #ddd;
+  }
+
+  .font{
+    font-family: "Poppins", serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .font-title{
+    font-family: "Poppins", serif;
+    font-weight: 600;
+  }
+
+  .bg-selected {
+    background-color: #000 !important; 
+    color: #fff !important;
+    
+  }

@@ -53,7 +53,7 @@ export default function TableNav() {
           className="btn btn-light border-2 border-dark rounded-pill mb-3 px-4"
           style={{ backgroundColor: "#f2efea" }}
           data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          data-bs-target="#modalIngresar"
         >
           Añadir
         </button>

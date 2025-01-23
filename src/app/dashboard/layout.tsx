@@ -7,6 +7,9 @@ import SideNav from "../ui/dashboard/sidenav";
 import Nav from "../ui/dashboard/nav";
 import Boxes from "../ui/dashboard/boxes";
 import TableNav from "../ui/dashboard/tablenav";
+import Calendar from "../ui/dashboard/modals/calendar";
+import Ingresar from "../ui/dashboard/modals/ingresar";
+import Crear from "../ui/dashboard/modals/crear";
 
 export default function Layout() {
   const router = useRouter();
@@ -35,6 +38,9 @@ export default function Layout() {
           </div>
         </div>
       </div>
+      <Calendar />
+      <Ingresar />
+      <Crear />
     </main>
   );
 }

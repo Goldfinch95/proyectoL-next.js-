@@ -8,7 +8,7 @@ import Nav from "../ui/dashboard/nav";
 import Boxes from "../ui/dashboard/boxes";
 import TableNav from "../ui/dashboard/tablenav";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout() {
   const router = useRouter();
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 

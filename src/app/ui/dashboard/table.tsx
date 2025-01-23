@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styles from "../table.module.css";
 import { Poppins } from "next/font/google";
 
 export const poppins = Poppins({ weight: "600", subsets: ["latin"] });

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../app/ui/global.css";
-import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap/dist/css/bootstrap.min.css";
 import FontAwesomeConfig from "../app/ui/fontawesome";
 import Bootstrap from "./bootstrap";
 
@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -26,3 +26,4 @@ export default function RootLayout({
     </html>
   );
 }
+

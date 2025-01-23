@@ -7,9 +7,7 @@ export default function Ingresar() {
   const [gasto, setGasto] = useState("");
   const [itemList] = useState(["Cuenta 1", "Cuenta 2", "Cuenta 3"]);
 
-  const onSelectItem = (item : any) => {
-    setSelectedValue(item);
-  };
+  
 
   return (
     <div
@@ -54,7 +52,6 @@ export default function Ingresar() {
                     <button
                       className="dropdown-item"
                       type="button"
-                      onClick={() => onSelectItem(item)}
                     >
                       {item}
                     </button>

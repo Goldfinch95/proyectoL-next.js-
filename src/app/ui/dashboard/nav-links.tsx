@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMoneyCheckDollar,
-  faLandmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMoneyCheckDollar, faLandmark } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
 
 const links = [
@@ -16,6 +13,12 @@ const links = [
 
 export default function NavLinks() {
   const pathname = usePathname();
+
+  // Si pathname es undefined, no renderizamos nada o aplicamos una verificación.
+  if (!pathname) {
+    return null; // O puedes mostrar un loader o algo similar mientras se obtiene el pathname.
+  }
+
   return (
     <>
       {links.map((link) => {
@@ -26,7 +29,7 @@ export default function NavLinks() {
             className={clsx(
               "nav-link d-flex align-items-center px-3 py-2 w-100 rounded-3",
               {
-                "active  text-black": pathname === link.href,
+                "active text-black": pathname === link.href,
                 "text-black": pathname !== link.href,
               }
             )}

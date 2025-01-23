@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "../app/ui/global.css";
 import "bootstrap/dist/css/bootstrap.min.css"
-import BootstrapJs from "../app/bootstrapJs"
 import FontAwesomeConfig from "../app/ui/fontawesome";
+import Bootstrap from "./bootstrap";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,11 +18,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <FontAwesomeConfig />
+        <Bootstrap />
       </head>
       <body>
         {children}
       </body>
-      <BootstrapJs />
     </html>
   );
 }

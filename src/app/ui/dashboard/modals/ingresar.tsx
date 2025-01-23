@@ -1,16 +1,11 @@
-import { useState } from "react";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import Confirm from "./confirm";
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default function Ingresar() {
-  const [selectedValue, setSelectedValue] = useState("");
-  const [gasto, setGasto] = useState("");
-  const [itemList] = useState(["Cuenta 1", "Cuenta 2", "Cuenta 3"]);
+  
 
-  const onSelectItem = (item : any) => {
-    setSelectedValue(item);
-  };
+  
 
   return (
     <div
@@ -47,20 +42,9 @@ export default function Ingresar() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                {selectedValue || "Cuenta"}
+                
               </button>
               <ul className="dropdown-menu w-100">
-                {itemList.map((item, index) => (
-                  <li key={index}>
-                    <button
-                      className="dropdown-item"
-                      type="button"
-                      onClick={() => onSelectItem(item)}
-                    >
-                      {item}
-                    </button>
-                  </li>
-                ))}
               </ul>
             </div>
             <input
@@ -68,8 +52,7 @@ export default function Ingresar() {
               placeholder="Gasto"
               className="ps-3 rounded-3 border-1 py-2"
               style={{ backgroundColor: "#fff" }}
-              value={gasto}
-              onChange={(e) => setGasto(e.target.value)}
+              
             />
           </div>
 

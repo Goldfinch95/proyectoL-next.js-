@@ -39,6 +39,27 @@ yarn dev
 ```
 2.Abre tu navegador y ve a http://localhost:3000 para ver el proyecto en ejecución.
 
+## Navegación de Carpetas 
+
+El proyecto tiene la siguiente estructura principal dentro de la carpeta src:
+
+App:
+**page.jsx: Página principal del proyecto.
+**layout.jsx: Archivo de diseño principal (layout).
+**bootstrap.jsx: Archivo para manejar la lógica de Bootstrap.
+
+*dashboard
+*Contiene la página principal del dashboard.
+*Subpáginas
+**caja: Página de caja.
+**fondo_fijo: Página de fondo fijo.
+
+*ui
+**dashboard: Componentes visuales relacionados con el dashboard.
+**modals: Componentes visuales relacionados con modales.
+**Archivos CSS: Estilos globales en un archivo CSS principal y
+Módulos CSS para estilos específicos de componentes.
+
 Notas
 
 Si encuentras algún problema, verifica que tienes la versión correcta de Node.js instalada y que las dependencias se instalaron correctamente.

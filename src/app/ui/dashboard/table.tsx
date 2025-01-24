@@ -23,7 +23,7 @@ export default function TableComponent() {
       try {
         const response = await fetch("http://localhost:3000/movement");
         const result = await response.json();
-        console.log("Datos obtenidos:", result.data.rows);
+        //console.log("Datos obtenidos:", result.data.rows);
         setData(result.data.rows);
       } catch (error) {
         console.error("Error al obtener los datos:", error);

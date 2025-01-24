@@ -6,9 +6,16 @@ import { Poppins } from "next/font/google";
 
 export const poppins = Poppins({ weight: "600", subsets: ["latin"] });
 
+interface DataItem {
+  date: string;
+  origin: string;
+  description: string;
+  amount: string;
+}
+
 export default function TableComponent() {
   // Estado para los datos de la tabla
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<DataItem[]>([]);
 
   //llamado a la api y almacenamiento de datos
   useEffect(() => {

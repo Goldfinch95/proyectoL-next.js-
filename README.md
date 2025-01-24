@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProyectoL 
 
-## Getting Started
+Este proyecto está desarrollado con **Next.js**.
 
-First, run the development server:
+## Requisitos Previos
 
+Antes de empezar, asegúrate de tener instalados:
+
+- [Node.js](https://nodejs.org/) (versión 16 o superior recomendada)
+- [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
+
+## Instalación
+
+1. Clona este repositorio:
+```bash
+git clone https://github.com/Goldfinch95/proyectoL-next.js-.git
+```
+2.Ve al directorio del proyecto:
+```bash
+cd proyectoL-next.js-
+```
+3.Instala las dependencias:
+```bash
+npm install
+```
+o, si usas Yarn:
+```bash
+yarn
+```
+## Ejecucion
+
+1.Inicia el servidor de desarrollo:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+o, si usas Yarn:
+```bash
+yarn dev
+```
+2.Abre tu navegador y ve a http://localhost:3000 para ver el proyecto en ejecución.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Navegación de Carpetas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+El proyecto tiene la siguiente estructura principal dentro de la carpeta `src`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## **1. app**
+- **`page.jsx`**: Página principal del proyecto.
+- **`layout.jsx`**: Archivo de diseño principal (layout).
+- **`bootstrap.jsx`**: Archivo para manejar la lógica de Bootstrap.
 
-## Learn More
+## **2. dashboard**
+- Página principal del dashboard.
+- Subpáginas:
+  - **`caja`**: Página de caja.
+  - **`fondo_fijo`**: Página de fondo fijo.
 
-To learn more about Next.js, take a look at the following resources:
+## **3. ui**
+- **dashboard**: Componentes visuales relacionados con el dashboard.
+- **modals**: Componentes visuales relacionados con modales.
+- - **`global.css`**: Estilos globales del proyecto.
+- **Módulos CSS**: Archivos de estilos específicos para componentes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Notas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Si encuentras algún problema, verifica que tienes la versión correcta de Node.js instalada y que las dependencias se instalaron correctamente.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

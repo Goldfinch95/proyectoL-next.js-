@@ -3,7 +3,7 @@ import "../app/ui/global.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FontAwesomeConfig from "../app/ui/fontawesome";
 import Bootstrap from "./bootstrap";
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 
 export const metadata: Metadata = {
   title: "Create Next App",

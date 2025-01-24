@@ -11,7 +11,8 @@ export default function Ingresar() {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value); 
-    console.log(event.target.value); 
+    console.log(event.target.value);
+    console.log(inputValue) 
   };
 
   const resetInputValue = () => {

@@ -1,8 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProyectoL 
 
-## Getting Started
+Este proyecto está desarrollado con **Next.js**.
 
-First, run the development server:
+## Requisitos Previos
+
+Antes de empezar, asegúrate de tener instalados:
+
+- [Node.js](https://nodejs.org/) (versión 16 o superior recomendada)
+- [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
+
+## Instalación
+
+Clona este repositorio:
+```bash
+git clone https://github.com/Goldfinch95/proyectoL-next.js-.git
+```
+Ve al directorio del proyecto:
 
 ```bash
 npm run dev
@@ -12,7 +25,7 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

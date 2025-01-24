@@ -4,20 +4,7 @@ import Image from "next/image";
 import { useEffect } from 'react';
 
 
-export default function Home() {
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/movement"); 
-        const data = await response.json();
-        console.log("Datos obtenidos:", data); 
-      } catch (error) {
-        console.error("Error al obtener los datos:", error); 
-      }
-    };
-    fetchData(); 
-  }, []);
-  
+export default function Home() {  
   return (
     <main>
       <div style={{ position: "relative", width: "100vw", height: "100vh" }}>

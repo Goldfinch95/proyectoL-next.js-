@@ -57,7 +57,7 @@ El proyecto tiene la siguiente estructura principal dentro de la carpeta `src`:
 ## **3. ui**
 - **dashboard**: Componentes visuales relacionados con el dashboard.
 - **modals**: Componentes visuales relacionados con modales.
-- - **`global.css`**: Estilos globales del proyecto.
+- **global.css**: Estilos globales del proyecto.
 - **Módulos CSS**: Archivos de estilos específicos para componentes.
 
 Notas

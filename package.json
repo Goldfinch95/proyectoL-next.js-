@@ -9,19 +9,21 @@
     "lint": "next lint"
   },
   "eslintConfig": {
-  "rules": {
-   "no-unused-vars": 0,
-   "@typescript-eslint/no-unused-vars": 0
-  }
-},
+    "rules": {
+      "no-unused-vars": 0,
+      "@typescript-eslint/no-unused-vars": 0
+    }
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "bootstrap": "^5.3.3",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "next": "15.1.5",
     "react": "^19.0.0",
+    "react-datepicker": "^7.6.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {

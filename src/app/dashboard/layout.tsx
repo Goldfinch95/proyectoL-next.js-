@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation"; // Importamos usePathname
 import SideNav from "../ui/dashboard/sidenav";
@@ -13,15 +13,39 @@ import Crear from "../ui/dashboard/modals/crear";
 import TableComponent from "../ui/dashboard/table";
 
 export default function Layout() {
+
   const router = useRouter();
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 
+  // Estado de los datos para la tabla
+  const [data, setData] = useState<any[]>([]);
+
+  // Función para obtener los datos de la API
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/movement");
+      const result = await response.json();
+      setData(result.data.rows); // Establecemos los datos en el estado
+    } catch (error) {
+      console.error("Error al obtener los datos:", error);
+    }
+  };
+
+  // Redirigir a /dashboard/caja si estamos en /dashboard
   useEffect(() => {
-    // Si estamos en /dashboard, redirigimos a /dashboard/caja
     if (pathname === "/dashboard") {
       router.push("/dashboard/caja");
     }
-  }, [pathname, router]); // Aseguramos que la redirección ocurra al cambiar el pathname
+  }, [pathname, router]);
+
+  // Esta función será llamada cuando se añadan nuevos datos desde el modal
+  const handleDataUpdated = () => {
+    fetchData(); // Recargar los datos
+  };
+
+  useEffect(() => {
+    fetchData(); // Obtener los datos al cargar la página
+  }, []);
 
   return (
     <main className="container-fluid">
@@ -40,27 +64,14 @@ export default function Layout() {
             </div>
           </div>
           <div>
-            <TableComponent />
+          <TableComponent data={data} />
           </div>
         </div>
       </div>
       <Calendar />
       <Ingresar />
-      <Crear />
+      <Crear onDataUpdated={handleDataUpdated} />
     </main>
   );
 }
 
-
-
-
-  {/*return (
-      <div className="d-flex flex-column flex-md-row overflow-hidden-md">
-    <div className=" flex-shrink-0 w-md-25">
-      <SideNav />
-    </div>
-    <div className="flex-grow-1 overflow-auto-md">
-      {children}
-    </div>
-  </div>
-    );*/}

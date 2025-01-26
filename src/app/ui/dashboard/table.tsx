@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+
 
 import { Poppins } from "next/font/google";
 
@@ -13,25 +13,12 @@ interface DataItem {
   amount: string;
 }
 
-export default function TableComponent() {
-  // Estado para los datos de la tabla
-  const [data, setData] = useState<DataItem[]>([]);
+// Se recibe 'data' como prop
+interface TableComponentProps {
+  data: DataItem[];
+}
 
-  //llamado a la api y almacenamiento de datos
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/movement");
-        const result = await response.json();
-        //console.log("Datos obtenidos:", result.data.rows);
-        setData(result.data.rows);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
+export default function TableComponent({ data }: TableComponentProps) {
   // legibilidad de la fecha y hora
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -54,7 +41,7 @@ export default function TableComponent() {
       maximumFractionDigits: 2,
     });
   };
-  //tabla
+
   return (
     <div>
       <table
@@ -102,7 +89,6 @@ export default function TableComponent() {
           </tr>
         </thead>
         <tbody>
-          {/* Las filas del cuerpo de la tabla tendrán fondo transparente */}
           {data.map((item, index) => (
             <tr key={index} style={{ backgroundColor: "#fbf9f5" }}>
               <td

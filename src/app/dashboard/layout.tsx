@@ -28,7 +28,7 @@ export default function Layout() {
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 
   // Estado de los datos para la tabla
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Movement[]>([]);
 
   // Función para obtener los datos de la API
   const fetchData = async () => {

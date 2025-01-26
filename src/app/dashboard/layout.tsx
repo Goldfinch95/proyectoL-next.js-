@@ -12,6 +12,16 @@ import Ingresar from "../ui/dashboard/modals/ingresar";
 import Crear from "../ui/dashboard/modals/crear";
 import TableComponent from "../ui/dashboard/table";
 
+interface Movement {
+  id: string;
+  description: string;
+  amount: string;
+  date: string;
+  origin: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function Layout() {
 
   const router = useRouter();

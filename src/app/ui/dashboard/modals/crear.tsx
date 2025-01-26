@@ -61,7 +61,7 @@ export default function Crear({ onDataUpdated }: { onDataUpdated: () => void }) 
       });
 
       if (response.ok) {
-        console.log("Movimiento creado exitosamente");
+        /*console.log("Movimiento creado exitosamente");*/
         resetInputValue();
         onDataUpdated(); // Llamamos a la función para actualizar la tabla
       } else {

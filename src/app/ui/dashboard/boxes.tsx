@@ -6,9 +6,7 @@ import styles from '../boxes.module.css';
 
 export const poppins = Poppins({ weight: "500", subsets: ["latin"] });
 
-interface balanceData {
-  balance: string;
-}
+
 
 interface BoxesProps {
   onDataUpdated: () => void;  // Acepta la función para actualizar datos

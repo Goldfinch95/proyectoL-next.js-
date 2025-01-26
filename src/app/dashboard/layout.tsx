@@ -68,13 +68,13 @@ export default function Layout() {
         <div className="col-10 col-sm-9 col-xl-10 m-0" style={{ backgroundColor: '#fbf9f5' }}>
           <div className="sticky-top" style={{ backgroundColor: '#fbf9f5' }}>
             <Nav />
-            <Boxes />
+            <Boxes onDataUpdated={handleDataUpdated} />
             <TableNav />
             <div>
             </div>
           </div>
           <div>
-          <TableComponent data={data} />
+          <TableComponent data={data} onDataUpdated={handleDataUpdated} />
           </div>
         </div>
       </div>

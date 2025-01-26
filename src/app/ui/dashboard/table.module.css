@@ -1,0 +1,8 @@
+.iconHover {
+    color: rgba(199, 199, 199, 0.5); /* Gris claro por defecto */
+    transition: color 0.3s ease; /* Suaviza el cambio de color */
+  }
+  
+  .iconHover:hover {
+    color: black; /* Cambia el color a negro cuando se hace hover */
+  }

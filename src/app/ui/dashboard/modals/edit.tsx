@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Poppins } from "next/font/google";
-import Confirm from "./confirm";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -67,14 +66,6 @@ export default function Edit({ data, onDataUpdated }: EditProps) {
     });
   };
 
-  const getFormattedDate = (dateString: string) => {
-    try {
-      return format(new Date(dateString), "dd MMM yyyy", { locale: es });
-    } catch (error) {
-      return "Fecha inválida";
-    }
-  };
-
   const handleDateChange = (date: Date | null) => {
     if (date) {
       setFormData((prev) => ({
@@ -121,7 +112,7 @@ export default function Edit({ data, onDataUpdated }: EditProps) {
         console.error("Error de red:", error);
       }
     } else {
-      console.error("No hay ID para actualizar");
+      
       return;
     }
   };

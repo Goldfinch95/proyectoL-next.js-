@@ -1,7 +1,8 @@
 "use client";
-
+import { useState } from "react";
+import Edit from "./modals/edit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { Poppins } from "next/font/google";
 import styles from "./table.module.css";
 export const poppins = Poppins({ weight: "600", subsets: ["latin"] });
@@ -21,6 +22,13 @@ interface TableComponentProps {
 }
 
 export default function TableComponent({ data, onDataUpdated }: TableComponentProps) {
+
+  const [selectedItem, setSelectedItem] = useState<DataItem | null>(null);
+
+  const handleEditClick = (item: DataItem) => {
+    setSelectedItem(item);
+    
+  };
   // Función para eliminar el movimiento
   const deleteMovement = async (id: string) => {
     try {
@@ -124,7 +132,15 @@ export default function TableComponent({ data, onDataUpdated }: TableComponentPr
                 </span>
               </td>
               <td className="" style={{ backgroundColor: "#fbf9f5", fontSize: "14px" }}>
-                <span className={"px-3 py-4 d-flex justify-content-lg-end pe-5"}>
+                <span className={"px-3 py-4 d-flex justify-content-lg-end pe-4"}>
+                <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    className={`fs-5 ${styles.iconHover} pe-4`}
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalEdit"
+                    onClick={() => handleEditClick(item)}
+
+                  />
                   <FontAwesomeIcon
                     icon={faTrash}
                     className={`fs-5 ${styles.iconHover}`}
@@ -138,7 +154,9 @@ export default function TableComponent({ data, onDataUpdated }: TableComponentPr
           ))}
         </tbody>
       </table>
+      <Edit data={selectedItem} onDataUpdated={onDataUpdated}  />
     </div>
   );
 }
 
+//${formatNumber(item.amount)}

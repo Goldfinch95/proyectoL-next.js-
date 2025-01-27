@@ -13,6 +13,8 @@ interface DataItem {
   origin: string;
   description: string;
   amount: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Se recibe 'data' como prop

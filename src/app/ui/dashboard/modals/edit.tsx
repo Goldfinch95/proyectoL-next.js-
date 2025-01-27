@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Poppins } from "next/font/google";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
 export const poppins = Poppins({ weight: "600", subsets: ["latin"] });
 
 interface DataItem {
@@ -43,7 +42,7 @@ export default function Edit({ data, onDataUpdated }: EditProps) {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return format(date, "dd MMM yyyy", { locale: es });
+      return format(date, "dd MMM yyyy"); // ✅ Correcto en v4.1.0
     } catch {
       return "Fecha inválida";
     }

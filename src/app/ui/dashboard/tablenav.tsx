@@ -1,39 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
-import styles from '../tablenav.module.css'
+import styles from "../tablenav.module.css";
+import debounce from "lodash.debounce";
 
-export default function TableNav() {
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const onSearch = () => {
-    // Lógica para buscar, por ejemplo, filtrar resultados
-    console.log("Buscando: ", searchTerm);
-  };
+interface TableNavProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  onSearchApi: (term: string) => void;
+}
+
+export default function TableNav({
+  searchTerm,
+  setSearchTerm,
+  onSearchApi,
+}: TableNavProps) {
+  const handleSearch = useCallback(
+    debounce((term: string) => {
+      onSearchApi(term);
+    }, 300),
+    [onSearchApi]
+  );
+  /*const handleSearch = useCallback(
+    debounce((term: string) => {
+      // Filtra los movimientos cuyo origin coincida (case-insensitive)
+      const filteredData = data.filter(movement =>
+        movement.origin.toLowerCase().includes(term.toLowerCase())
+      );
+      
+      console.log("Datos filtrados por origin:", filteredData);
+    }, 1000),
+    [data] // La dependencia asegura que se use la data actualizada
+  );*/
 
   return (
     <div className="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom">
       <div className="d-flex align-items-center gap-3">
         <div className="input-group w-100">
           <button
-          className={`btn btn-outline-secondary ${styles['btn-custom']}`}
+            className={`btn btn-outline-secondary ${styles["btn-custom"]}`}
             type="button"
-            onClick={onSearch}
           >
             <FontAwesomeIcon icon={faMagnifyingGlass} />
           </button>
           <input
             type="text"
-            className={`form-control ps-0 ${styles['form-control']}`}
+            className={`form-control ps-0 ${styles["form-control"]}`}
             placeholder="Buscar cuenta..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onInput={onSearch}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              handleSearch(e.target.value); // Búsqueda automática
+            }}
           />
         </div>
         <button
@@ -64,7 +88,7 @@ export default function TableNav() {
           data-bs-toggle="modal"
           data-bs-target="#modalCrear"
         >
-          Crear Cuenta
+          Crear Movimiento
         </button>
       </div>
     </div>

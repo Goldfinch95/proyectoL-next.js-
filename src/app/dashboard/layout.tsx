@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation"; // Importamos usePathname
 import SideNav from "../ui/dashboard/sidenav";
@@ -23,24 +23,52 @@ interface Movement {
 }
 
 export default function Layout() {
+// Estado de los datos para la tabla
+const [data, setData] = useState<Movement[]>([]);
+// Estado de los datos filtrados para la tabla
+const [filteredData, setFilteredData] = useState<Movement[]>([]);
+//Estado para el dato de búsqueda.
+const [searchTerm, setSearchTerm] = useState("");
 
   const router = useRouter();
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 
-  // Estado de los datos para la tabla
-  const [data, setData] = useState<Movement[]>([]);
+  
 
-  // Función para obtener los datos de la API
-  const fetchData = async () => {
+  // Función para obtener datos (con o sin filtro)
+  const fetchData = useCallback(async (term?: string) => {
     try {
-      const response = await fetch("http://localhost:3000/movement");
+      const url = term 
+        ? `http://localhost:3000/movement?origin=${encodeURIComponent(term)}`
+        : "http://localhost:3000/movement";
+      
+      const response = await fetch(url);
       const result = await response.json();
-      setData(result.data.rows); // Establecemos los datos en el estado
+      setData(result.data.rows);
+      setFilteredData(result.data.rows); // Actualiza datos filtrados
     } catch (error) {
       console.error("Error al obtener los datos:", error);
     }
-  };
+  }, []);
 
+   // Filtrado en el cliente al cambiar searchTerm
+   useEffect(() => {
+    if (searchTerm) {
+      const filtered = data.filter(movement => 
+        movement.origin.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data); // Si no hay término, muestra todos
+    }
+  }, [searchTerm, data]); // <-- Se ejecuta cuando cambia searchTerm o data
+
+  // Efecto inicial y redirección
+  useEffect(() => {
+    if (pathname === "/dashboard") router.push("/dashboard/caja");
+    fetchData();
+  }, []);
+  
   // Redirigir a /dashboard/caja si estamos en /dashboard
   useEffect(() => {
     if (pathname === "/dashboard") {
@@ -69,12 +97,14 @@ export default function Layout() {
           <div className="sticky-top" style={{ backgroundColor: '#fbf9f5' }}>
             <Nav />
             <Boxes onDataUpdated={handleDataUpdated} />
-            <TableNav />
+            <TableNav searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onSearchApi={fetchData}  />
             <div>
             </div>
           </div>
           <div>
-          <TableComponent data={data} onDataUpdated={handleDataUpdated} />
+          <TableComponent data={filteredData} />
           </div>
         </div>
       </div>

@@ -34,7 +34,19 @@ const [searchTerm, setSearchTerm] = useState("");
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 
   
+  // Obtener datos iniciales (sin parámetros)
+const fetchData = useCallback(async () => {
+  try {
+    const response = await fetch("http://localhost:3000/movement");
+    const result = await response.json();
+    setData(result.data.rows);
+    setFilteredData(result.data.rows); // Inicializar con todos los datos
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}, []);
 
+/*
   // Función para obtener datos (con o sin filtro)
   const fetchData = useCallback(async (term?: string) => {
     try {
@@ -50,7 +62,17 @@ const [searchTerm, setSearchTerm] = useState("");
       console.error("Error al obtener los datos:", error);
     }
   }, []);
+*/
 
+// Filtrar solo en cliente
+useEffect(() => {
+  const filtered = searchTerm
+    ? data.filter(m => m.origin.toLowerCase().includes(searchTerm.toLowerCase()))
+    : data;
+  
+  setFilteredData(filtered);
+}, [searchTerm, data]);
+/*
    // Filtrado en el cliente al cambiar searchTerm
    useEffect(() => {
     if (searchTerm) {
@@ -62,7 +84,7 @@ const [searchTerm, setSearchTerm] = useState("");
       setFilteredData(data); // Si no hay término, muestra todos
     }
   }, [searchTerm, data]); // <-- Se ejecuta cuando cambia searchTerm o data
-
+*/
   // Efecto inicial y redirección
   useEffect(() => {
     if (pathname === "/dashboard") router.push("/dashboard/caja");
@@ -99,7 +121,7 @@ const [searchTerm, setSearchTerm] = useState("");
             <Boxes onDataUpdated={handleDataUpdated} />
             <TableNav searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        onSearchApi={fetchData}  />
+          />
             <div>
             </div>
           </div>

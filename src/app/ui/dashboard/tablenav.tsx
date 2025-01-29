@@ -9,23 +9,17 @@ import {
 import styles from "../tablenav.module.css";
 import debounce from "lodash.debounce";
 
-
 interface TableNavProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  onSearchApi: (term: string) => void;
 }
 
-export default function TableNav({
-  searchTerm,
-  setSearchTerm,
-  onSearchApi,
-}: TableNavProps) {
+export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
   const handleSearch = useCallback(
     debounce((term: string) => {
-      onSearchApi(term);
-    }, 300),
-    [onSearchApi]
+      setSearchTerm(term);
+    }, 1000),
+    [setSearchTerm]
   );
   /*const handleSearch = useCallback(
     debounce((term: string) => {
@@ -56,7 +50,7 @@ export default function TableNav({
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              handleSearch(e.target.value); // Búsqueda automática
+              handleSearch(e.target.value);
             }}
           />
         </div>

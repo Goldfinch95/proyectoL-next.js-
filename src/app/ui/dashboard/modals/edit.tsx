@@ -225,8 +225,8 @@ export default function Edit({ data, onDataUpdated }: EditProps) {
               type="button"
               className="btn btn-primary border-dark rounded-4 px-4 py-3 w-100 fs-4"
               style={{ backgroundColor: "#292929" }}
-              data-bs-toggle="modal"
-              data-bs-target="#modalConfirm"
+              data-bs-dismiss="modal"
+                aria-label="Confirm"
               onClick={handleSubmit}
             >
               <span className="fs-3">Guardar</span>

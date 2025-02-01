@@ -35,8 +35,8 @@ export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
 
   return (
     <div className="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom">
-      <div className="d-flex align-items-center gap-3">
-        <div className="input-group w-100">
+      <div className="d-flex align-items-center gap-3 mb-2">
+        <div className="input-group w-100 ">
           <button
             className={`btn btn-outline-secondary ${styles["btn-custom"]}`}
             type="button"
@@ -66,18 +66,10 @@ export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
       </div>
 
       <div className="d-flex gap-2">
+        
         <button
           type="button"
-          className="btn btn-light border-2 border-dark rounded-pill mb-3 px-4"
-          style={{ backgroundColor: "#f2efea" }}
-          data-bs-toggle="modal"
-          data-bs-target="#modalIngresar"
-        >
-          Añadir
-        </button>
-        <button
-          type="button"
-          className="btn btn-dark border-2 border-dark rounded-pill mb-3 px-5"
+          className="btn btn-dark border-2 border-dark rounded-4 mb-2 px-3"
           style={{ backgroundColor: "#292929" }}
           data-bs-toggle="modal"
           data-bs-target="#modalCrear"

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Confirm from "./confirm";
 import { Poppins } from "next/font/google";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -178,8 +177,8 @@ export default function Crear({ onDataUpdated }: { onDataUpdated: () => void }) 
               type="button"
               className="btn btn-primary border-dark rounded-4 px-4 py-3 w-100 fs-4"
               style={{ backgroundColor: "#292929" }}
-              data-bs-toggle="modal"
-              data-bs-target="#modalConfirm"
+              data-bs-dismiss="modal"
+              aria-label="Confirm"
               onClick={handleSubmit}
             >
               <span className="fs-3">Guardar</span>
@@ -187,7 +186,6 @@ export default function Crear({ onDataUpdated }: { onDataUpdated: () => void }) 
           </div>
         </div>
       </div>
-      <Confirm />
     </div>
   );
 }

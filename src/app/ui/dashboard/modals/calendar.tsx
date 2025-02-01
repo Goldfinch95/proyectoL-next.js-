@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import styles from "./calendar.module.css";
-import Confirm from "./confirm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -241,8 +240,8 @@ export default function Calendar() {
               <button
                 type="button"
                 className="btn btn-secondary"
-                data-bs-toggle="modal"
-                data-bs-target="#modalConfirm"
+                data-bs-dismiss="modal"
+                aria-label="Confirm"
               >
                 Cerrar
               </button>
@@ -250,7 +249,6 @@ export default function Calendar() {
           </div>
         </div>
       </div>
-      <Confirm />
     </div>
   );
 }

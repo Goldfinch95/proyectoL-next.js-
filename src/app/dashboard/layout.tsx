@@ -126,7 +126,7 @@ useEffect(() => {
             </div>
           </div>
           <div>
-          <TableComponent data={filteredData} />
+          <TableComponent data={filteredData}  onDataUpdated={handleDataUpdated} />
           </div>
         </div>
       </div>

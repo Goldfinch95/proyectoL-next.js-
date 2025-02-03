@@ -2,10 +2,7 @@
 import { useState, useEffect } from "react";
 import styles from "./calendar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 interface CalendarDay {
   date: number;
@@ -14,64 +11,59 @@ interface CalendarDay {
   inactive: boolean;
 }
 
-export default function Calendar() {
+interface CalendarProps {
+  onDatesSelected?: (start: Date, end: Date) => void;
+}
+
+const generateCalendar = (year: number, month: number) => {
+  const days: CalendarDay[][] = [];
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  const startDate = new Date(firstDayOfMonth);
+  const dayOfWeek = startDate.getDay();
+  const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  startDate.setDate(startDate.getDate() - diff);
+
+  while (true) {
+    const week: CalendarDay[] = [];
+    let hasActiveDays = false;
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = new Date(startDate);
+      const isInactive = currentDate.getMonth() !== month;
+
+      week.push({
+        date: currentDate.getDate(),
+        month: currentDate.getMonth(),
+        year: currentDate.getFullYear(),
+        inactive: isInactive,
+      });
+
+      if (!isInactive) hasActiveDays = true;
+      startDate.setDate(startDate.getDate() + 1);
+    }
+
+    if (hasActiveDays) days.push(week);
+    else break;
+    if (startDate > lastDayOfMonth) break;
+  }
+
+  return days;
+};
+
+export default function Calendar({ onDatesSelected }: CalendarProps) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedDays, setSelectedDays] = useState<CalendarDay[]>([]);
   const [rangeStart, setRangeStart] = useState<CalendarDay | null>(null);
 
   const monthNames = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
   ];
   const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
 
-  const generateCalendar = (year: number, month: number) => {
-    const days: CalendarDay[][] = [];
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-
-    const startDate = new Date(firstDayOfMonth);
-    const dayOfWeek = startDate.getDay();
-    const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    startDate.setDate(startDate.getDate() - diff);
-
-    while (true) {
-      const week: CalendarDay[] = [];
-      let hasActiveDays = false;
-
-      for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        const isInactive = currentDate.getMonth() !== month;
-
-        week.push({
-          date: currentDate.getDate(),
-          month: currentDate.getMonth(),
-          year: currentDate.getFullYear(),
-          inactive: isInactive,
-        });
-
-        if (!isInactive) hasActiveDays = true;
-        startDate.setDate(startDate.getDate() + 1);
-      }
-
-      if (hasActiveDays) days.push(week);
-      else break;
-      if (startDate > lastDayOfMonth) break;
-    }
-
-    return days;
-  };
 
   const getDaysInRange = (start: CalendarDay, end: CalendarDay) => {
     const days: CalendarDay[] = [];
@@ -84,16 +76,16 @@ export default function Calendar() {
         date: currentDate.getDate(),
         month: currentDate.getMonth(),
         year: currentDate.getFullYear(),
-        inactive: currentDate.getMonth() !== selectedMonth,
+        inactive: false, // Permitir selección entre meses
       });
+      
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
     return days;
   };
 
   const toggleDaySelection = (day: CalendarDay) => {
-    if (day.inactive) return;
+    if (!rangeStart && day.inactive) return;
 
     if (!rangeStart) {
       setRangeStart(day);
@@ -102,42 +94,53 @@ export default function Calendar() {
       let startDate = new Date(rangeStart.year, rangeStart.month, rangeStart.date);
       let endDate = new Date(day.year, day.month, day.date);
       
-      if (startDate > endDate) {
-        const temp = startDate;
-      startDate = endDate;
-      endDate = temp;
-      }
+      if (startDate > endDate) [startDate, endDate] = [endDate, startDate];
 
-      const daysInRange = getDaysInRange(
-        { 
-          date: startDate.getDate(), 
-          month: startDate.getMonth(), 
-          year: startDate.getFullYear(), 
-          inactive: false 
-        },{ 
-          date: endDate.getDate(), 
-          month: endDate.getMonth(), 
-          year: endDate.getFullYear(), 
-          inactive: false 
+      setSelectedDays(getDaysInRange(
+        {
+          date: startDate.getDate(),
+          month: startDate.getMonth(),
+          year: startDate.getFullYear(),
+          inactive: false,
+        },
+        {
+          date: endDate.getDate(),
+          month: endDate.getMonth(),
+          year: endDate.getFullYear(),
+          inactive: false,
         }
-      );
-
-      setSelectedDays(daysInRange);
-    setRangeStart(null);
+      ));
+      console.log(`DateTo: ${startDate}, DateFrom: ${endDate}`)
+      setRangeStart(null);
     }
   };
 
-  const calendarDays = generateCalendar(selectedYear, selectedMonth);
-
-  const prevYear = () => setSelectedYear((prev) => prev - 1);
-  const nextYear = () => setSelectedYear((prev) => prev + 1);
-  const prevMonth = () => setSelectedMonth((prev) => (prev === 0 ? 11 : prev - 1));
-  const nextMonth = () => setSelectedMonth((prev) => (prev === 11 ? 0 : prev + 1));
-
-  useEffect(() => {
-    //console.log("Días seleccionados:", JSON.stringify(selectedDays, null, 2));
-  }, [selectedDays]);
-
+  const handleApply = () => {
+    if (selectedDays.length > 0 && onDatesSelected) {
+      const sortedDays = [...selectedDays].sort((a, b) => {
+        const dateA = new Date(a.year, a.month, a.date).getTime();
+        const dateB = new Date(b.year, b.month, b.date).getTime();
+        return dateA - dateB;
+      });
+  
+      // Formatear directamente a YYYY-MM-DD
+      const formatISODate = (day: CalendarDay) => {
+        const year = day.year;
+        const month = String(day.month + 1).padStart(2, '0'); // Meses 0-based
+        const date = String(day.date).padStart(2, '0');
+        return `${year}-${month}-${date}`;
+      };
+  
+      const isoStart = formatISODate(sortedDays[0]);
+      const isoEnd = formatISODate(sortedDays[sortedDays.length - 1]);
+  
+      onDatesSelected(isoStart, isoEnd);
+      
+      // Resetear selección
+      setSelectedDays([]);
+      setRangeStart(null);
+    }
+  };
   return (
     <div>
       <div
@@ -155,11 +158,11 @@ export default function Calendar() {
                   <div className="d-flex justify-content-between align-items-center">
                     <h5 className="font-title">{monthNames[selectedMonth]}</h5>
                     <div className="d-flex align-items-center gap-2">
-                      <button className="btn" onClick={prevYear}>
+                      <button className="btn" onClick={() => setSelectedYear(prev => prev - 1)}>
                         <FontAwesomeIcon icon={faChevronLeft} />
                       </button>
                       <h3 className="m-0">{selectedYear}</h3>
-                      <button className="btn" onClick={nextYear}>
+                      <button className="btn" onClick={() => setSelectedYear(prev => prev + 1)}>
                         <FontAwesomeIcon icon={faChevronRight} />
                       </button>
                     </div>
@@ -173,7 +176,7 @@ export default function Calendar() {
                   <div className="col-1 text-center d-flex justify-content-center">
                     <button
                       className="btn border-0 btn-outline-secondary"
-                      onClick={prevMonth}
+                      onClick={() => setSelectedMonth(prev => (prev === 0 ? 11 : prev - 1))}
                     >
                       <FontAwesomeIcon icon={faChevronLeft} />
                     </button>
@@ -191,7 +194,7 @@ export default function Calendar() {
                       ))}
                     </div>
 
-                    {calendarDays.map((week, i) => (
+                    {generateCalendar(selectedYear, selectedMonth).map((week, i) => (
                       <div key={i} className="row justify-content-center">
                         {week.map((day, j) => {
                           const isSelected = selectedDays.some(
@@ -228,7 +231,7 @@ export default function Calendar() {
                   <div className="col-1 text-center d-flex justify-content-center">
                     <button
                       className="btn border-0 btn-outline-secondary"
-                      onClick={nextMonth}
+                      onClick={() => setSelectedMonth(prev => (prev === 11 ? 0 : prev + 1))}
                     >
                       <FontAwesomeIcon icon={faChevronRight} />
                     </button>
@@ -237,14 +240,11 @@ export default function Calendar() {
               </div>
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-                aria-label="Confirm"
-              >
-                Cerrar
+            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal"
+                aria-label="Confirm" onClick={handleApply}>
+                Aplicar
               </button>
+              
             </div>
           </div>
         </div>

@@ -29,11 +29,59 @@ const [data, setData] = useState<Movement[]>([]);
 const [filteredData, setFilteredData] = useState<Movement[]>([]);
 //Estado para el dato de búsqueda.
 const [searchTerm, setSearchTerm] = useState("");
+//Estados para el filtro de la tabla.
+const [dateFrom, setDateFrom] = useState<string | null>(null);
+  const [dateTo, setDateTo] = useState<string | null>(null);
+//datos filtrados con calendario
+const [apiData, setApiData] = useState<any[]>([]);
+
+
 
   const router = useRouter();
   const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
 
-  
+  const handleDatesSelected = (start: string, end: string) => {
+    setDateFrom(start);
+    setDateTo(end);
+    // Logs con formato
+    //console.log(dateFrom);
+    //console.log(dateTo);
+  };
+
+  //obtener datos filtrados
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!dateFrom || !dateTo) return;
+
+      try {
+        const response = await fetch('http://localhost:3000/movement/filter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            dateFrom,
+            dateTo,
+            origin: "" // Valor estático según tu ejemplo
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Datos recibidos de la API:', data);
+        setApiData(data);
+
+      } catch (error) {
+        console.error('Error al obtener datos:', error);
+      }
+    };
+
+    fetchData();
+  }, [dateFrom, dateTo]); // Se ejecuta cuando cambian las fechas
+
   // Obtener datos iniciales (sin parámetros)
 const fetchData = useCallback(async () => {
   try {
@@ -46,23 +94,7 @@ const fetchData = useCallback(async () => {
   }
 }, []);
 
-/*
-  // Función para obtener datos (con o sin filtro)
-  const fetchData = useCallback(async (term?: string) => {
-    try {
-      const url = term 
-        ? `http://localhost:3000/movement?origin=${encodeURIComponent(term)}`
-        : "http://localhost:3000/movement";
-      
-      const response = await fetch(url);
-      const result = await response.json();
-      setData(result.data.rows);
-      setFilteredData(result.data.rows); // Actualiza datos filtrados
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
-    }
-  }, []);
-*/
+
 
 // Filtrar solo en cliente
 useEffect(() => {
@@ -72,19 +104,6 @@ useEffect(() => {
   
   setFilteredData(filtered);
 }, [searchTerm, data]);
-/*
-   // Filtrado en el cliente al cambiar searchTerm
-   useEffect(() => {
-    if (searchTerm) {
-      const filtered = data.filter(movement => 
-        movement.origin.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(data); // Si no hay término, muestra todos
-    }
-  }, [searchTerm, data]); // <-- Se ejecuta cuando cambia searchTerm o data
-*/
   // Efecto inicial y redirección
   useEffect(() => {
     if (pathname === "/dashboard") router.push("/dashboard/caja");
@@ -126,11 +145,11 @@ useEffect(() => {
             </div>
           </div>
           <div>
-          <TableComponent data={filteredData}  onDataUpdated={handleDataUpdated} />
+          <TableComponent data={data}  onDataUpdated={handleDataUpdated} />
           </div>
         </div>
       </div>
-      <Calendar />
+      <Calendar onDatesSelected={handleDatesSelected} />
       <Ingresar />
       <Crear onDataUpdated={handleDataUpdated} />
     </main>

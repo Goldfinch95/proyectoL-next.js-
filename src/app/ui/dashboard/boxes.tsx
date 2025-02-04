@@ -21,7 +21,7 @@ export default function Boxes({ onDataUpdated }: BoxesProps) {
       try {
         const response = await fetch("http://localhost:3000/movement/balance");
         const result = await response.json();
-        console.log("Datos obtenidos:", result.data.balance);
+        //console.log("Datos obtenidos:", result.data.balance);
         setData(result.data.balance);
       } catch (error) {
         console.error("Error al obtener los datos:", error);

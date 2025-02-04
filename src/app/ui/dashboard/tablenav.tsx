@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
@@ -12,26 +12,31 @@ import debounce from "lodash.debounce";
 interface TableNavProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  onSearch: (term: string) => void; // Nueva prop para manejar la búsqueda
 }
 
-export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
-  const handleSearch = useCallback(
+export default function TableNav({ searchTerm, setSearchTerm, onSearch }: TableNavProps) {
+  const [inputValue, setInputValue] = useState(searchTerm);
+
+  // Debounce the search function
+  const debouncedSearch = useCallback(
     debounce((term: string) => {
-      setSearchTerm(term);
+      onSearch(term); // Llamar a la función de búsqueda cuando el usuario deja de escribir
     }, 1000),
-    [setSearchTerm]
+    [onSearch]
   );
-  /*const handleSearch = useCallback(
-    debounce((term: string) => {
-      // Filtra los movimientos cuyo origin coincida (case-insensitive)
-      const filteredData = data.filter(movement =>
-        movement.origin.toLowerCase().includes(term.toLowerCase())
-      );
-      
-      console.log("Datos filtrados por origin:", filteredData);
-    }, 1000),
-    [data] // La dependencia asegura que se use la data actualizada
-  );*/
+
+  // Actualizar el valor del input y disparar la búsqueda debounced
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setInputValue(term); // Actualizar el estado local del input
+    debouncedSearch(term); // Disparar la búsqueda debounced
+  };
+
+  // Sincronizar el estado local con el prop searchTerm
+  useEffect(() => {
+    setInputValue(searchTerm);
+  }, [searchTerm]);
 
   return (
     <div className="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom">
@@ -47,11 +52,8 @@ export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
             type="text"
             className={`form-control ps-0 ${styles["form-control"]}`}
             placeholder="Buscar cuenta..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              handleSearch(e.target.value);
-            }}
+            value={inputValue}
+            onChange={handleInputChange}
           />
         </div>
         <button
@@ -66,7 +68,6 @@ export default function TableNav({ searchTerm, setSearchTerm }: TableNavProps) {
       </div>
 
       <div className="d-flex gap-2">
-        
         <button
           type="button"
           className="btn btn-dark border-2 border-dark rounded-4 mb-2 px-3"

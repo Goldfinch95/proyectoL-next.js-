@@ -110,7 +110,7 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
           inactive: false,
         }
       ));
-      console.log(`DateTo: ${startDate}, DateFrom: ${endDate}`)
+      //console.log(`DateTo: ${startDate}, DateFrom: ${endDate}`)
       setRangeStart(null);
     }
   };

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation"; // Importamos usePathname
+import { usePathname } from "next/navigation";
 import SideNav from "../ui/dashboard/sidenav";
 import Nav from "../ui/dashboard/nav";
 import Boxes from "../ui/dashboard/boxes";
@@ -23,129 +23,147 @@ interface Movement {
 }
 
 export default function Layout() {
-// Estado de los datos para la tabla
-const [data, setData] = useState<Movement[]>([]);
-// Estado de los datos filtrados para la tabla
-const [filteredData, setFilteredData] = useState<Movement[]>([]);
-//Estado para el dato de búsqueda.
-const [searchTerm, setSearchTerm] = useState("");
-//Estados para el filtro de la tabla.
-const [dateFrom, setDateFrom] = useState<string | null>(null);
+  const [data, setData] = useState<Movement[]>([]);
+  const [filteredData, setFilteredData] = useState<Movement[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFrom, setDateFrom] = useState<string | null>(null);
   const [dateTo, setDateTo] = useState<string | null>(null);
-//datos filtrados con calendario
-const [apiData, setApiData] = useState<any[]>([]);
-
-
+  const [apiData, setApiData] = useState<Movement[]>([]);
 
   const router = useRouter();
-  const pathname = usePathname(); // Usamos usePathname para obtener la ruta actual
+  const pathname = usePathname();
 
-  const handleDatesSelected = (start: string, end: string) => {
-    setDateFrom(start);
-    setDateTo(end);
-    // Logs con formato
-    //console.log(dateFrom);
-    //console.log(dateTo);
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);  // Actualiza el searchTerm
+    const filtered = term.trim() === "" 
+      ? (apiData.length > 0 ? apiData : data)
+      : (apiData.length > 0 ? apiData : data).filter((m) =>
+          m.origin.toLowerCase().includes(term.toLowerCase())
+        );
+    setFilteredData(filtered);  // Filtra los datos según el término de búsqueda
   };
 
-  //obtener datos filtrados
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!dateFrom || !dateTo) return;
+  const handleDatesSelected = (start: string, end: string) => {
+    const endDate = new Date(end);
+    endDate.setDate(endDate.getDate() + 1);
+    const adjustedEnd = endDate.toISOString().split("T")[0];
+  
+    setDateFrom(start);
+    setDateTo(adjustedEnd);
+  };
 
-      try {
-        const response = await fetch('http://localhost:3000/movement/filter', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateFrom,
-            dateTo,
-            origin: "" // Valor estático según tu ejemplo
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Datos recibidos de la API:', data);
-        setApiData(data);
-
-      } catch (error) {
-        console.error('Error al obtener datos:', error);
+  const fetchFilteredData = useCallback(async () => {
+    try {
+      let body: any = {};
+  
+      if (searchTerm) {
+        body = { origin: searchTerm, dateFrom: "", dateTo: "" };
+      } else if (dateFrom && dateTo) {
+        body = { dateFrom, dateTo, origin: "" };
+      } else {
+        return;
       }
-    };
-
-    fetchData();
-  }, [dateFrom, dateTo]); // Se ejecuta cuando cambian las fechas
-
-  // Obtener datos iniciales (sin parámetros)
-const fetchData = useCallback(async () => {
-  try {
-    const response = await fetch("http://localhost:3000/movement");
-    const result = await response.json();
-    setData(result.data.rows);
-    setFilteredData(result.data.rows); // Inicializar con todos los datos
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}, []);
-
-
-
-// Filtrar solo en cliente
-useEffect(() => {
-  const filtered = searchTerm
-    ? data.filter(m => m.origin.toLowerCase().includes(searchTerm.toLowerCase()))
-    : data;
   
-  setFilteredData(filtered);
-}, [searchTerm, data]);
-  // Efecto inicial y redirección
+      const response = await fetch("http://localhost:3000/movement/filter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+  
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+  
+      const result = await response.json();
+      const sortedData = result.data.sort((a: Movement, b: Movement) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+  
+      setApiData(sortedData);
+    } catch (error) {
+      console.error("Error fetching filtered data:", error);
+      setApiData([]);
+    }
+  }, [searchTerm, dateFrom, dateTo]);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:3000/movement");
+      const result = await response.json();
+      setData(result.data.rows);
+      setFilteredData(result.data.rows);
+      fetchFilteredData(); 
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }, [fetchFilteredData]);
+
   useEffect(() => {
-    if (pathname === "/dashboard") router.push("/dashboard/caja");
-    fetchData();
-  }, []);
-  
-  // Redirigir a /dashboard/caja si estamos en /dashboard
+    const filtered = searchTerm.trim() === "" 
+      ? (apiData.length > 0 ? apiData : data)
+      : (apiData.length > 0 ? apiData : data).filter((m) =>
+          m.origin.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    setFilteredData(filtered);
+  }, [searchTerm, data, apiData]);
+
   useEffect(() => {
     if (pathname === "/dashboard") {
       router.push("/dashboard/caja");
     }
   }, [pathname, router]);
 
-  // Esta función será llamada cuando se añadan nuevos datos desde el modal
   const handleDataUpdated = () => {
-    fetchData(); // Recargar los datos
+    fetchData();
+    fetchFilteredData(); 
   };
 
   useEffect(() => {
-    fetchData(); // Obtener los datos al cargar la página
-  }, []);
+    fetchData(); 
+  }, [fetchData]);
+
+  useEffect(() => {
+    if (dateFrom && dateTo) {
+      const filtered = (apiData.length > 0 ? apiData : data)
+        .filter((m) => {
+          const movementDate = new Date(m.date);
+          const startDate = new Date(dateFrom);
+          const endDate = new Date(dateTo);
+
+          return movementDate >= startDate && movementDate <= endDate;
+        })
+        .filter((m) => {
+          return searchTerm.trim() === ""
+            ? true
+            : m.origin.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+
+      setFilteredData(filtered);
+    }
+  }, [searchTerm, dateFrom, dateTo, apiData, data]);
 
   return (
     <main className="container-fluid">
-      <div className="row" style={{ height: '100vh' }}>
-        <div className="col-2 col-sm-3 col-xl-2" style={{ backgroundColor: '#fbf9f5' }}>
+      <div className="row" style={{ height: "100vh" }}>
+        <div className="col-2 col-sm-3 col-xl-2" style={{ backgroundColor: "#fbf9f5" }}>
           <div className="sticky-top">
             <SideNav />
           </div>
         </div>
-        <div className="col-10 col-sm-9 col-xl-10 m-0" style={{ backgroundColor: '#fbf9f5' }}>
-          <div className="sticky-top" style={{ backgroundColor: '#fbf9f5' }}>
+        <div className="col-10 col-sm-9 col-xl-10 m-0" style={{ backgroundColor: "#fbf9f5" }}>
+          <div className="sticky-top" style={{ backgroundColor: "#fbf9f5" }}>
             <Nav />
             <Boxes onDataUpdated={handleDataUpdated} />
-            <TableNav searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-          />
-            <div>
-            </div>
+            <TableNav 
+              searchTerm={searchTerm} 
+              setSearchTerm={setSearchTerm} 
+              onSearch={handleSearch}  // Asegúrate de pasar la función handleSearch
+            />
+            <div></div>
           </div>
           <div>
-          <TableComponent data={data}  onDataUpdated={handleDataUpdated} />
+            <TableComponent
+              data={filteredData} 
+              onDataUpdated={handleDataUpdated}
+            />
           </div>
         </div>
       </div>
@@ -155,4 +173,3 @@ useEffect(() => {
     </main>
   );
 }
-

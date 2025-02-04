@@ -19,7 +19,7 @@ interface DataItem {
 }
 
 interface TableComponentProps {
-  data: DataItem[];
+  data: DataItem[];     // Datos originales o filtrados por API
   onDataUpdated: () => void;
 }
 
@@ -27,7 +27,14 @@ export default React.memo(function TableComponent({
   data,
   onDataUpdated,
 }: TableComponentProps) {
+
   const [selectedItem, setSelectedItem] = useState<DataItem | null>(null);
+
+  
+
+
+  // Determinar qué datos mostrar con prioridad
+  
 
   const handleEditClick = (item: DataItem) => {
     setSelectedItem(item);
@@ -113,7 +120,7 @@ export default React.memo(function TableComponent({
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+        {data.map((item) => (
             <tr key={item.id} style={{ backgroundColor: "#fbf9f5" }}>
               <td style={{ backgroundColor: "#fbf9f5", fontSize: "14px" }}>
                 <span className="px-3 py-4 d-flex justify-content-lg-start ps-3 text-black-50">

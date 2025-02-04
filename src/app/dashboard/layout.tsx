@@ -29,19 +29,10 @@ export default function Layout() {
   const [dateFrom, setDateFrom] = useState<string | null>(null);
   const [dateTo, setDateTo] = useState<string | null>(null);
   const [apiData, setApiData] = useState<Movement[]>([]);
+  const [balance, setBalance] = useState<string>("0"); // Nuevo estado para el balance
 
   const router = useRouter();
   const pathname = usePathname();
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);  // Actualiza el searchTerm
-    const filtered = term.trim() === "" 
-      ? (apiData.length > 0 ? apiData : data)
-      : (apiData.length > 0 ? apiData : data).filter((m) =>
-          m.origin.toLowerCase().includes(term.toLowerCase())
-        );
-    setFilteredData(filtered);  // Filtra los datos según el término de búsqueda
-  };
 
   const handleDatesSelected = (start: string, end: string) => {
     const endDate = new Date(end);
@@ -52,31 +43,59 @@ export default function Layout() {
     setDateTo(adjustedEnd);
   };
 
+  // Función para obtener el balance
+  const fetchBalance = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:3000/movement/balance");
+      const result = await response.json();
+      setBalance(result.data.balance);
+    } catch (error) {
+      console.error("Error obteniendo balance:", error);
+    }
+  }, []);
+
+  // Función para actualizar todos los datos
+  const handleDataUpdated = useCallback(async () => {
+    try {
+      // Actualizar movimientos
+      const movementsResponse = await fetch("http://localhost:3000/movement");
+      const movementsResult = await movementsResponse.json();
+      setData(movementsResult.data.rows);
+      setFilteredData(movementsResult.data.rows);
+
+      // Actualizar balance
+      await fetchBalance();
+
+      // Actualizar datos filtrados si es necesario
+      if (searchTerm || (dateFrom && dateTo)) {
+        await fetchFilteredData();
+      }
+    } catch (error) {
+      console.error("Error actualizando datos:", error);
+    }
+  }, [searchTerm, dateFrom, dateTo, fetchBalance]);
+
+  // Función para filtrado
   const fetchFilteredData = useCallback(async () => {
     try {
-      let body: any = {};
-  
-      if (searchTerm) {
-        body = { origin: searchTerm, dateFrom: "", dateTo: "" };
-      } else if (dateFrom && dateTo) {
-        body = { dateFrom, dateTo, origin: "" };
-      } else {
-        return;
-      }
-  
+      const body = {
+        origin: searchTerm,
+        dateFrom: dateFrom || "",
+        dateTo: dateTo || ""
+      };
+
       const response = await fetch("http://localhost:3000/movement/filter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-  
+
       if (!response.ok) throw new Error(`Error ${response.status}`);
-  
+
       const result = await response.json();
       const sortedData = result.data.sort((a: Movement, b: Movement) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
-  
       setApiData(sortedData);
     } catch (error) {
       console.error("Error fetching filtered data:", error);
@@ -84,61 +103,42 @@ export default function Layout() {
     }
   }, [searchTerm, dateFrom, dateTo]);
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await fetch("http://localhost:3000/movement");
-      const result = await response.json();
-      setData(result.data.rows);
-      setFilteredData(result.data.rows);
-      fetchFilteredData(); 
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }, [fetchFilteredData]);
-
+  // Efecto inicial para carga de datos
   useEffect(() => {
-    const filtered = searchTerm.trim() === "" 
-      ? (apiData.length > 0 ? apiData : data)
-      : (apiData.length > 0 ? apiData : data).filter((m) =>
+    const initializeData = async () => {
+      await handleDataUpdated();
+      if (pathname === "/dashboard") {
+        router.push("/dashboard/caja");
+      }
+    };
+    initializeData();
+  }, []);
+
+  // Efecto para búsqueda y filtrado
+  useEffect(() => {
+    const applyFilters = () => {
+      let filtered = [...data];
+      
+      if (searchTerm) {
+        filtered = filtered.filter(m => 
           m.origin.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    setFilteredData(filtered);
-  }, [searchTerm, data, apiData]);
+      }
 
-  useEffect(() => {
-    if (pathname === "/dashboard") {
-      router.push("/dashboard/caja");
-    }
-  }, [pathname, router]);
-
-  const handleDataUpdated = () => {
-    fetchData();
-    fetchFilteredData(); 
-  };
-
-  useEffect(() => {
-    fetchData(); 
-  }, [fetchData]);
-
-  useEffect(() => {
-    if (dateFrom && dateTo) {
-      const filtered = (apiData.length > 0 ? apiData : data)
-        .filter((m) => {
+      if (dateFrom && dateTo) {
+        const startDate = new Date(dateFrom);
+        const endDate = new Date(dateTo);
+        filtered = filtered.filter(m => {
           const movementDate = new Date(m.date);
-          const startDate = new Date(dateFrom);
-          const endDate = new Date(dateTo);
-
           return movementDate >= startDate && movementDate <= endDate;
-        })
-        .filter((m) => {
-          return searchTerm.trim() === ""
-            ? true
-            : m.origin.toLowerCase().includes(searchTerm.toLowerCase());
         });
+      }
 
       setFilteredData(filtered);
-    }
-  }, [searchTerm, dateFrom, dateTo, apiData, data]);
+    };
+
+    applyFilters();
+  }, [searchTerm, dateFrom, dateTo, data]);
 
   return (
     <main className="container-fluid">
@@ -151,13 +151,15 @@ export default function Layout() {
         <div className="col-10 col-sm-9 col-xl-10 m-0" style={{ backgroundColor: "#fbf9f5" }}>
           <div className="sticky-top" style={{ backgroundColor: "#fbf9f5" }}>
             <Nav />
-            <Boxes onDataUpdated={handleDataUpdated} />
+            <Boxes 
+              balance={balance}  // Pasamos el balance como prop
+              onDataUpdated={handleDataUpdated} 
+            />
             <TableNav 
               searchTerm={searchTerm} 
               setSearchTerm={setSearchTerm} 
-              onSearch={handleSearch}  // Asegúrate de pasar la función handleSearch
+              onSearch={(term: string) => setSearchTerm(term)}
             />
-            <div></div>
           </div>
           <div>
             <TableComponent

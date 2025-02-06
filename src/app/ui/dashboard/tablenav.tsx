@@ -11,11 +11,11 @@ import debounce from "lodash.debounce";
 
 interface TableNavProps {
   searchTerm: string;
-  setSearchTerm: (term: string) => void;
+  
   onSearch: (term: string) => void; // Prop para manejar la búsqueda
 }
 
-export default function TableNav({ searchTerm, setSearchTerm, onSearch }: TableNavProps) {
+export default function TableNav({ searchTerm, onSearch }: TableNavProps) {
   const [inputValue, setInputValue] = useState(searchTerm);
 
   // Debounce the search function
@@ -37,8 +37,8 @@ export default function TableNav({ searchTerm, setSearchTerm, onSearch }: TableN
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setInputValue(term);
-    setSearchTerm(term);
-    debouncedAPICall(term); // ¡Esto se ejecutará solo después del delay!
+    // Eliminamos la llamada inmediata a setSearchTerm
+    debouncedAPICall(term); // La actualización se hará solo después del delay.
   };
 
   // Sincronizar el estado local con el prop searchTerm (si cambia desde el padre)

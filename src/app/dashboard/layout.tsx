@@ -160,7 +160,7 @@ export default function Layout() {
             />
             <TableNav 
               searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
+              
               onSearch={setSearchTerm}
             />
           </div>

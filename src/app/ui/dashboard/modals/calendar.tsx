@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./calendar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ interface CalendarDay {
 }
 
 interface CalendarProps {
-  onDatesSelected?: (start: Date, end: Date) => void;
+  onDatesSelected?: (start: string, end: string) => void;
 }
 
 const generateCalendar = (year: number, month: number) => {
@@ -64,7 +64,6 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
   ];
   const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
 
-
   const getDaysInRange = (start: CalendarDay, end: CalendarDay) => {
     const days: CalendarDay[] = [];
     const startDate = new Date(start.year, start.month, start.date);
@@ -76,9 +75,8 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
         date: currentDate.getDate(),
         month: currentDate.getMonth(),
         year: currentDate.getFullYear(),
-        inactive: false, // Permitir selección entre meses
+        inactive: false,
       });
-      
       currentDate.setDate(currentDate.getDate() + 1);
     }
     return days;
@@ -110,7 +108,6 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
           inactive: false,
         }
       ));
-      //console.log(`DateTo: ${startDate}, DateFrom: ${endDate}`)
       setRangeStart(null);
     }
   };
@@ -122,25 +119,24 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
         const dateB = new Date(b.year, b.month, b.date).getTime();
         return dateA - dateB;
       });
-  
-      // Formatear directamente a YYYY-MM-DD
+
       const formatISODate = (day: CalendarDay) => {
         const year = day.year;
-        const month = String(day.month + 1).padStart(2, '0'); // Meses 0-based
+        const month = String(day.month + 1).padStart(2, '0');
         const date = String(day.date).padStart(2, '0');
         return `${year}-${month}-${date}`;
       };
-  
+
       const isoStart = formatISODate(sortedDays[0]);
       const isoEnd = formatISODate(sortedDays[sortedDays.length - 1]);
-  
+
       onDatesSelected(isoStart, isoEnd);
       
-      // Resetear selección
       setSelectedDays([]);
       setRangeStart(null);
     }
   };
+
   return (
     <div>
       <div
@@ -240,11 +236,14 @@ export default function Calendar({ onDatesSelected }: CalendarProps) {
               </div>
             </div>
             <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal"
-                aria-label="Confirm" onClick={handleApply}>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                data-bs-dismiss="modal"
+                onClick={handleApply}
+              >
                 Aplicar
               </button>
-              
             </div>
           </div>
         </div>

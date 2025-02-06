@@ -12,28 +12,36 @@ import debounce from "lodash.debounce";
 interface TableNavProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  onSearch: (term: string) => void; // Nueva prop para manejar la búsqueda
+  onSearch: (term: string) => void; // Prop para manejar la búsqueda
 }
 
 export default function TableNav({ searchTerm, setSearchTerm, onSearch }: TableNavProps) {
   const [inputValue, setInputValue] = useState(searchTerm);
 
   // Debounce the search function
-  const debouncedSearch = useCallback(
+  const debouncedAPICall = useCallback(
     debounce((term: string) => {
-      onSearch(term); // Llamar a la función de búsqueda cuando el usuario deja de escribir
-    }, 1000),
-    [onSearch]
+      onSearch(term); // Llama a la API después de 300ms sin cambios
+    }, 300),
+    [onSearch] // Dependencia necesaria
   );
+
+  // Limpiar el debounce al desmontar el componente
+  useEffect(() => {
+    return () => {
+      debouncedAPICall.cancel();
+    };
+  }, [debouncedAPICall]);
 
   // Actualizar el valor del input y disparar la búsqueda debounced
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
-    setInputValue(term); // Actualizar el estado local del input
-    debouncedSearch(term); // Disparar la búsqueda debounced
+    setInputValue(term);
+    setSearchTerm(term);
+    debouncedAPICall(term); // ¡Esto se ejecutará solo después del delay!
   };
 
-  // Sincronizar el estado local con el prop searchTerm
+  // Sincronizar el estado local con el prop searchTerm (si cambia desde el padre)
   useEffect(() => {
     setInputValue(searchTerm);
   }, [searchTerm]);
@@ -41,7 +49,7 @@ export default function TableNav({ searchTerm, setSearchTerm, onSearch }: TableN
   return (
     <div className="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom">
       <div className="d-flex align-items-center gap-3 mb-2">
-        <div className="input-group w-100 ">
+        <div className="input-group w-100">
           <button
             className={`btn btn-outline-secondary ${styles["btn-custom"]}`}
             type="button"

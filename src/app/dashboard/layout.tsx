@@ -23,122 +23,125 @@ interface Movement {
 }
 
 export default function Layout() {
-  const [data, setData] = useState<Movement[]>([]);
   const [filteredData, setFilteredData] = useState<Movement[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFrom, setDateFrom] = useState<string | null>(null);
   const [dateTo, setDateTo] = useState<string | null>(null);
-  const [apiData, setApiData] = useState<Movement[]>([]);
-  const [balance, setBalance] = useState<string>("0"); // Nuevo estado para el balance
+  const [balance, setBalance] = useState<string>("0");
+
+  // Indicador para saber si en algún momento se escribió en el input de búsqueda.
+  const [searchWasActive, setSearchWasActive] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleDatesSelected = (start: string, end: string) => {
-    const endDate = new Date(end);
-    endDate.setDate(endDate.getDate() + 1);
-    const adjustedEnd = endDate.toISOString().split("T")[0];
-  
-    setDateFrom(start);
-    setDateTo(adjustedEnd);
-  };
+  // Actualizamos el indicador de búsqueda.
+  useEffect(() => {
+    if (searchTerm.trim() !== "") {
+      setSearchWasActive(true);
+    } else {
+      // Si se borra el input, reiniciamos el indicador y también los filtros de fechas.
+      setSearchWasActive(false);
+      setDateFrom(null);
+      setDateTo(null);
+    }
+  }, [searchTerm]);
 
-  // Función para obtener el balance
+  // Función para obtener el balance.
   const fetchBalance = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:3000/movement/balance");
+      const response = await fetch("http://localhost:3000/movement/balance", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.json();
-      setBalance(result.data.balance);
+      // Suponiendo que el balance viene en result.data.balance.
+      setBalance(result.data?.balance || "0");
     } catch (error) {
-      console.error("Error obteniendo balance:", error);
+      console.error("Error fetching balance:", error);
+      setBalance("0");
     }
   }, []);
 
-  // Función para actualizar todos los datos
-  const handleDataUpdated = useCallback(async () => {
+  // Función que realiza la solicitud según los filtros activos.
+  const fetchData = useCallback(async () => {
     try {
-      // Actualizar movimientos
-      const movementsResponse = await fetch("http://localhost:3000/movement");
-      const movementsResult = await movementsResponse.json();
-      setData(movementsResult.data.rows);
-      setFilteredData(movementsResult.data.rows);
+      const hasSearch = searchTerm.trim() !== "";
+      const hasDates = dateFrom !== null && dateTo !== null;
 
-      // Actualizar balance
-      await fetchBalance();
+      let url = "http://localhost:3000/movement";
+      let options: RequestInit = { method: "GET" };
 
-      // Actualizar datos filtrados si es necesario
-      if (searchTerm || (dateFrom && dateTo)) {
-        await fetchFilteredData();
+      if (hasSearch && hasDates) {
+        // Caso 4: Búsqueda y fechas combinadas.
+        url = "http://localhost:3000/movement/filter";
+        options = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ origin: searchTerm, dateFrom, dateTo }),
+        };
+      } else if (hasSearch && !hasDates) {
+        // Caso 2: Solo búsqueda.
+        url = "http://localhost:3000/movement/filter";
+        options = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ origin: searchTerm }),
+        };
+      } else if (!hasSearch && hasDates) {
+        // Caso 3: Solo fechas.
+        url = "http://localhost:3000/movement/filter";
+        options = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dateFrom, dateTo }),
+        };
+      } else {
+        // Caso 1: Sin filtros (o reinicio tras borrar búsqueda).
+        url = "http://localhost:3000/movement";
+        options = { method: "GET" };
       }
-    } catch (error) {
-      console.error("Error actualizando datos:", error);
-    }
-  }, [searchTerm, dateFrom, dateTo, fetchBalance]);
 
-  // Función para filtrado
-  const fetchFilteredData = useCallback(async () => {
-    try {
-      const body = {
-        origin: searchTerm,
-        dateFrom: dateFrom || "",
-        dateTo: dateTo || ""
-      };
-
-      const response = await fetch("http://localhost:3000/movement/filter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) throw new Error(`Error ${response.status}`);
-
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.json();
-      const sortedData = result.data.sort((a: Movement, b: Movement) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      });
-      setApiData(sortedData);
+      setFilteredData(result.data?.rows || result.data || []);
     } catch (error) {
-      console.error("Error fetching filtered data:", error);
-      setApiData([]);
+      console.error("Error fetching data:", error);
+      setFilteredData([]);
     }
   }, [searchTerm, dateFrom, dateTo]);
 
-  // Efecto inicial para carga de datos
+  // Inicialización: carga de datos, balance y redirección si es necesario.
   useEffect(() => {
-    const initializeData = async () => {
-      await handleDataUpdated();
+    const initialize = async () => {
+      await fetchData();
+      await fetchBalance();
       if (pathname === "/dashboard") {
         router.push("/dashboard/caja");
       }
     };
-    initializeData();
+    initialize();
+  }, [fetchData, fetchBalance, pathname, router]);
+
+  // Función para actualizar datos manualmente.
+  const handleDataUpdated = useCallback(async () => {
+    await Promise.all([fetchData(), fetchBalance()]);
+  }, [fetchData, fetchBalance]);
+
+  // Manejador para seleccionar fechas desde el calendario.
+  const handleDatesSelected = useCallback((start: string, end: string) => {
+    const endDate = new Date(end);
+    endDate.setDate(endDate.getDate() + 1);
+    const adjustedEnd = endDate.toISOString().split("T")[0];
+    setDateFrom(start);
+    setDateTo(adjustedEnd);
   }, []);
-
-  // Efecto para búsqueda y filtrado
-  useEffect(() => {
-    const applyFilters = () => {
-      let filtered = [...data];
-      
-      if (searchTerm) {
-        filtered = filtered.filter(m => 
-          m.origin.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-
-      if (dateFrom && dateTo) {
-        const startDate = new Date(dateFrom);
-        const endDate = new Date(dateTo);
-        filtered = filtered.filter(m => {
-          const movementDate = new Date(m.date);
-          return movementDate >= startDate && movementDate <= endDate;
-        });
-      }
-
-      setFilteredData(filtered);
-    };
-
-    applyFilters();
-  }, [searchTerm, dateFrom, dateTo, data]);
 
   return (
     <main className="container-fluid">
@@ -152,13 +155,13 @@ export default function Layout() {
           <div className="sticky-top" style={{ backgroundColor: "#fbf9f5" }}>
             <Nav />
             <Boxes 
-              balance={balance}  // Pasamos el balance como prop
+              balance={balance}
               onDataUpdated={handleDataUpdated} 
             />
             <TableNav 
-              searchTerm={searchTerm} 
-              setSearchTerm={setSearchTerm} 
-              onSearch={(term: string) => setSearchTerm(term)}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              onSearch={setSearchTerm}
             />
           </div>
           <div>
@@ -170,7 +173,6 @@ export default function Layout() {
         </div>
       </div>
       <Calendar onDatesSelected={handleDatesSelected} />
-      <Ingresar />
       <Crear onDataUpdated={handleDataUpdated} />
     </main>
   );
